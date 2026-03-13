@@ -1,7 +1,11 @@
 description = "Manually log token usage for a specific session."
 prompt = """
-手动记录脚本执行结果：
-!{node ${extensionPath}/scripts/log_token.cjs {{args}}}
+请调用 token-analyzer MCP 服务的 log_usage 工具，参数如下：
+- sessionId: 从 {{args}} 中提取
+- sessionTitle: 从 {{args}} 中提取
+- model: 从 {{args}} 中提取
+- prompt: 从 {{args}} 中提取
+- completion: 从 {{args}} 中提取
 
-请使用用户偏好的语言，根据上述输出，确认记录是否成功，并总结该条记录的 Token 消耗及估算成本。
+请使用用户偏好的语言，根据工具的输出，确认记录是否成功，并总结该条记录的 Token 消耗及估算成本。
 """

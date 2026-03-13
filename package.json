@@ -1,0 +1,24 @@
+{
+  "name": "llm-token-analyzer",
+  "version": "1.0.0",
+  "description": "[简体中文](./README_CN.md)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pityfish/llm-token-analyzer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/pityfish/llm-token-analyzer/issues"
+  },
+  "homepage": "https://github.com/pityfish/llm-token-analyzer#readme",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1"
+  }
+}

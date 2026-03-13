@@ -4,6 +4,15 @@
   "description": "Analyze and track LLM token usage with visual reports and auto-sync.",
   "author": "pengtaoyan",
   "license": "MIT",
+  "mcpServers": {
+    "token-analyzer": {
+      "command": "node",
+      "args": [
+        "${extensionPath}${/}scripts${/}mcp_server.cjs"
+      ],
+      "cwd": "${extensionPath}"
+    }
+  },
   "commands": {
     "directory": "commands"
   }

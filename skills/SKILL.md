@@ -31,11 +31,11 @@ Provides terminal reports and web-based interactive charts.
   - Automatically generates an HTML file and opens it in the browser.
   - Includes pie charts (model distribution) and line charts (daily consumption trends).
 
-**Underlying Commands:**
-```bash
-node scripts/analyze_tokens.cjs # Terminal report
-node scripts/generate_report.cjs # Generate and open charts
-```
+**Underlying Tools (MCP):**
+- `sync_tokens`: Automatically sync token usage data from temporary files.
+- `analyze_usage`: Generate terminal-based consumption reports.
+- `generate_chart`: Open interactive visual charts in the browser.
+- `log_usage`: Manually log a single session's consumption.
 
 ## Storage & Security
 
