@@ -1,9 +1,9 @@
 description = "Manually log token usage for a specific session."
 prompt = """
-请使用 node ${extensionPath:-.}/scripts/log_token.cjs {{args}} 记录我的 Token，并确认记录是否成功，总结该条记录的消耗。
+请使用 node $(find ~/.gemini/extensions -maxdepth 2 -type d -name "llm-token-analyzer" | head -n 1)/scripts/log_token.cjs {{args}} 记录我的 Token，并确认记录是否成功，总结该条记录的消耗。
 
 例如: /tokens:log <sid> <title> <model> <prompt> <completion>
 
 脚本输出：
-!{node ${extensionPath:-.}/scripts/log_token.cjs {{args}}}
+!{node $(find ~/.gemini/extensions -maxdepth 2 -type d -name "llm-token-analyzer" | head -n 1)/scripts/log_token.cjs {{args}}}
 """
