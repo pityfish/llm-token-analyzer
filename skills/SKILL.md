@@ -1,48 +1,48 @@
 ---
 name: llm-token-analyzer
-description: 记录并分析大模型对话的 Token 用量。支持按模型、日期进行统计，提供成本预估。支持全量增量同步 tmp 缓存文件中的 Token 数据，并支持生成可视化图表报告。
+description: Track and analyze LLM token usage. Supports statistics by model and date, provides cost estimation, incremental sync from tmp cache files, and interactive HTML visual reports.
 ---
 
 # LLM Token Analyzer
 
-此技能用于深度追踪大模型的 Token 消耗，支持全自动同步及可视化图表分析。
+This skill is used for in-depth tracking of LLM token consumption, supporting automated synchronization and visual chart analysis.
 
-## 核心功能
+## Core Features
 
-### 1. 全自动增量同步 (Incremental Auto-Sync)
+### 1. Incremental Auto-Sync
 
-扫描系统临时目录，自动提取并累加多轮对话的最精准元数据。
+Scans the system's temporary directory to automatically extract and accumulate the most accurate metadata from multi-turn conversations.
 
-**操作指南:**
-指令：“同步”、“同步用量”。
-- 全局扫描 `~/.gemini/tmp/`。
-- 自动提取标题、模型和 Token 字段。
-- 增量写入，绝不重复。
+**Usage Guide:**
+Commands: "sync", "sync usage".
+- Globally scans `~/.gemini/tmp/`.
+- Automatically extracts title, model, and token fields.
+- Incremental writing with no duplicates.
 
-### 2. 多维度可视化分析 (Analytics & Charts)
+### 2. Multi-dimensional Visual Analysis
 
-提供终端报告和网页版交互式图表。
+Provides terminal reports and web-based interactive charts.
 
-**操作指南:**
-- **终端报告**: 指令 “显示报告”、“分析用量”。
-  - 提供模型分布 ASCII 直方图。
-  - 提供总成本预估及聚合统计。
-- **图表报告**: 指令 “生成图表”、“显示可视化报告”。
-  - 自动生成 HTML 文件并打开浏览器。
-  - 包含饼图（模型分布）和折线图（每日消耗趋势）。
+**Usage Guide:**
+- **Terminal Report**: Commands "show report", "analyze usage".
+  - Provides ASCII histograms of model distribution.
+  - Provides total cost estimation and aggregated statistics.
+- **Chart Report**: Commands "generate chart", "show visual report".
+  - Automatically generates an HTML file and opens it in the browser.
+  - Includes pie charts (model distribution) and line charts (daily consumption trends).
 
-**底层指令:**
+**Underlying Commands:**
 ```bash
-node scripts/analyze_tokens.cjs # 终端报告
-node scripts/generate_report.cjs # 生成并打开图表
+node scripts/analyze_tokens.cjs # Terminal report
+node scripts/generate_report.cjs # Generate and open charts
 ```
 
-## 存储与安全 (最终方案)
+## Storage & Security
 
-为了确保数据完全独立且受保护，数据存储在专用的隐藏文件夹中：
-- **存储路径**: `~/.token_usage/token_usage.jsonl`
-- **安全保障**: 该目录独立于 Gemini 和技能安装目录，即使重装系统外的任何操作（如 reload）都不会导致数据丢失。
+To ensure data is completely independent and protected, it is stored in a dedicated hidden folder:
+- **Storage Path**: `~/.token_usage/token_usage.jsonl`
+- **Security**: This directory is independent of the Gemini and skill installation directories. Data will not be lost during reloads or other operations unless the system is reinstalled.
 
-## 成本预估
+## Cost Estimation
 
-内置最新的 Gemini 3、Gemini 2.5 系列定价模型，仅供参考。
+Includes the latest pricing models for the Gemini 3 and Gemini 2.5 series (for reference only).
