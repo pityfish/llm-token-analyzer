@@ -5,5 +5,5 @@ prompt = """
 例如: /tokens:log <sid> <title> <model> <prompt> <completion>
 
 脚本输出：
-!{node ${extensionPath}/scripts/log_token.cjs {{args}}}
+!{node scripts/log_token.cjs {{args}}}
 """
