@@ -17,7 +17,7 @@
 ### 安装指南
 通过 Gemini CLI 直接安装：
 ```bash
-gemini extensions install https://github.com/your-username/llm-token-analyzer
+gemini extensions install https://github.com/pityfish/llm-token-analyzer
 ```
 
 ### 命令速查
@@ -41,7 +41,7 @@ gemini extensions install https://github.com/your-username/llm-token-analyzer
 ### Installation
 Install directly via Gemini CLI:
 ```bash
-gemini extensions install https://github.com/your-username/llm-token-analyzer
+gemini extensions install https://github.com/pityfish/llm-token-analyzer
 ```
 
 ### Quick Commands
