@@ -1,5 +1,7 @@
 # LLM Token Analyzer (Gemini Extension)
 
+[简体中文](./README_CN.md)
+
 **LLM Token Analyzer** is a Gemini CLI extension designed to automatically track, sync, and visualize your token usage across all sessions.
 
 ## Features
