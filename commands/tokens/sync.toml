@@ -1,7 +1,7 @@
 description = "Automatically sync token usage data from the temporary directory."
 prompt = """
-请执行同步脚本并根据输出结果，用中文简短地告诉我本次同步了多少新对话，主要涉及哪些模型。
+脚本执行结果：
+!{node ${extensionPath}/scripts/auto_sync.cjs}
 
-脚本输出：
-!{node $(find ~/.gemini/extensions -maxdepth 2 -type d -name "llm-token-analyzer" | head -n 1)/scripts/auto_sync.cjs}
+请根据上述执行结果，用中文简短地告诉我本次同步了多少新对话，主要涉及哪些模型。
 """

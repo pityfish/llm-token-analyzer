@@ -1,7 +1,7 @@
 description = "Display detailed terminal reports of token usage."
 prompt = """
-请分析以下 Token 消耗报告，用中文为我总结我的支出成本、最常用的模型，并指出哪些会话消耗最多。
+脚本分析报告：
+!{node ${extensionPath}/scripts/analyze_tokens.cjs}
 
-脚本输出：
-!{node $(find ~/.gemini/extensions -maxdepth 2 -type d -name "llm-token-analyzer" | head -n 1)/scripts/analyze_tokens.cjs}
+请根据上述报告内容，用中文为我总结我的支出成本、最常用的模型，并指出哪些会话消耗最多。
 """
