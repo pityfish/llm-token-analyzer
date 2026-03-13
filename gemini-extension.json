@@ -1,0 +1,10 @@
+{
+  "name": "llm-token-analyzer",
+  "version": "1.0.0",
+  "description": "Analyze and track LLM token usage with visual reports and auto-sync.",
+  "author": "pengtaoyan",
+  "license": "MIT",
+  "commands": {
+    "directory": "commands"
+  }
+}

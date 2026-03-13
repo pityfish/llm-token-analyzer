@@ -1,0 +1,9 @@
+description = "手动记录一次会话的 Token 用量。"
+prompt = """
+请使用 node scripts/log_token.cjs {{args}} 记录我的 Token，并确认记录是否成功，总结该条记录的消耗。
+
+例如: /tokens:log <sid> <title> <model> <prompt> <completion>
+
+脚本输出：
+!{node ${extensionPath}/scripts/log_token.cjs {{args}}}
+"""

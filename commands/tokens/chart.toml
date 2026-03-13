@@ -1,0 +1,7 @@
+description = "生成并打开可视化的网页版图表报告。"
+prompt = """
+请运行脚本生成可视化报告并简要告知我报告已生成并打开，同时提炼一下目前数据中的一个关键趋势。
+
+脚本输出：
+!{node ${extensionPath}/scripts/generate_report.cjs}
+"""

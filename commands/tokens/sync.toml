@@ -1,0 +1,7 @@
+description = "自动同步 ~/.gemini/tmp 目录中的 Token 用量数据。"
+prompt = """
+请执行同步脚本并根据输出结果，用中文简短地告诉我本次同步了多少新对话，主要涉及哪些模型。
+
+脚本输出：
+!{node ${extensionPath}/scripts/auto_sync.cjs}
+"""
