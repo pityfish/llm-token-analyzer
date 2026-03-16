@@ -8,7 +8,7 @@
     "token-analyzer": {
       "command": "node",
       "args": [
-        "${extensionPath}${/}scripts${/}mcp_server.cjs"
+        "${extensionPath}${/}scripts${/}mcp_server.bundle.cjs"
       ],
       "cwd": "${extensionPath}"
     }
