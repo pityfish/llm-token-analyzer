@@ -1,13 +1,3 @@
-const fs = require('fs');
-const DEBUG_LOG = '/Users/pengtaoyan/elseProjects/llm-token-analyzer/mcp_debug.log';
-try {
-  fs.appendFileSync(DEBUG_LOG, '=== Started MCP server ===\nTime: ' + new Date().toISOString() + '\nArgs: ' + process.argv.join(' ') + '\nCWD: ' + process.cwd() + '\nENV_PATH: ' + process.env.PATH + '\n\n');
-} catch(e) {}
-process.on('uncaughtException', (err) => {
-  try { fs.appendFileSync(DEBUG_LOG, 'Uncaught Exception: ' + err.message + '\n' + err.stack + '\n'); } catch(e) {}
-  process.exit(1);
-});
-
 const { Server } = require("@modelcontextprotocol/sdk/server/index.js");
 const { StdioServerTransport } = require("@modelcontextprotocol/sdk/server/stdio.js");
 const { CallToolRequestSchema, ListToolsRequestSchema } = require("@modelcontextprotocol/sdk/types.js");

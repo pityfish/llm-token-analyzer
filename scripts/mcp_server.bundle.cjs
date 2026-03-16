@@ -32984,12 +32984,12 @@ var require_dist = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs2, exportName) {
+    function addFormats(ajv, list, fs, exportName) {
       var _a;
       var _b;
       (_a = (_b = ajv.opts.code).formats) !== null && _a !== void 0 ? _a : _b.formats = (0, codegen_1._)`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs2[f]);
+        ajv.addFormat(f, fs[f]);
     }
     module2.exports = exports2 = formatsPlugin;
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -33849,19 +33849,6 @@ var require_stdio2 = __commonJS({
 });
 
 // scripts/mcp_server.cjs
-var fs = require("fs");
-var DEBUG_LOG = "/Users/pengtaoyan/elseProjects/llm-token-analyzer/mcp_debug.log";
-try {
-  fs.appendFileSync(DEBUG_LOG, "=== Started MCP server ===\nTime: " + (/* @__PURE__ */ new Date()).toISOString() + "\nArgs: " + process.argv.join(" ") + "\nCWD: " + process.cwd() + "\nENV_PATH: " + process.env.PATH + "\n\n");
-} catch (e) {
-}
-process.on("uncaughtException", (err) => {
-  try {
-    fs.appendFileSync(DEBUG_LOG, "Uncaught Exception: " + err.message + "\n" + err.stack + "\n");
-  } catch (e) {
-  }
-  process.exit(1);
-});
 var { Server } = require_server2();
 var { StdioServerTransport } = require_stdio2();
 var { CallToolRequestSchema, ListToolsRequestSchema } = require_types2();
