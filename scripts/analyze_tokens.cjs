@@ -76,7 +76,9 @@ function analyzeTokenUsage() {
   }
 
   const lines = fs.readFileSync(LOG_FILE, 'utf-8').trim().split('\n');
-  const allRecords = lines.map(line => JSON.parse(line));
+  const allRecords = lines.map(line => {
+    try { return JSON.parse(line); } catch(e) { return null; }
+  }).filter(r => r);
 
   const sessionModelMap = new Map();
   allRecords.forEach(r => {
@@ -93,12 +95,13 @@ function analyzeTokenUsage() {
 
   const records = Array.from(sessionModelMap.values());
   const sessions = {};
-  const modelAggregation = {};
+  const modelStats = {};
+  const monthlyStats = {};
   let globalTotal = { prompt: 0, completion: 0, thought: 0, cached: 0, tool: 0, cost: 0, tokens: 0 };
 
   records.forEach(rec => {
     const sid = rec.sessionId || rec.session_id;
-    const title = rec.sessionTitle || rec.session_title;
+    const title = rec.sessionTitle || rec.session_title || 'Untitled Session';
     const model = rec.model;
     const prompt = rec.promptTokens || rec.prompt_tokens || 0;
     const completion = rec.completionTokens || rec.completion_tokens || 0;
@@ -109,27 +112,36 @@ function analyzeTokenUsage() {
     const startTime = rec.sessionStartTime || rec.startTime || rec.start_time;
     const lastUpdated = rec.sessionLastUpdated || rec.lastUpdated || rec.last_updated;
 
-    if (!sessions[sid]) {
-      sessions[sid] = { title, startTime, lastUpdated, models: {}, total_cost: 0 };
-    }
-
-    if (!sessions[sid].models[model]) {
-      sessions[sid].models[model] = { prompt: 0, completion: 0, thought: 0, cached: 0, tool: 0, cost: 0 };
-    }
-
+    const month = startTime ? startTime.substring(0, 7) : 'Unknown';
     const cost = calculateCost(model, prompt, completion, cached);
 
-    sessions[sid].models[model].prompt += prompt;
-    sessions[sid].models[model].completion += completion;
-    sessions[sid].models[model].thought += thought;
-    sessions[sid].models[model].cached += cached;
-    sessions[sid].models[model].tool += tool;
-    sessions[sid].models[model].cost += cost;
-    sessions[sid].total_cost += cost;
+    // Session Aggregation
+    if (!sessions[sid]) {
+      sessions[sid] = { title, startTime, lastUpdated, cost: 0, tokens: 0 };
+    }
+    sessions[sid].cost += cost;
+    sessions[sid].tokens += total;
 
-    if (!modelAggregation[model]) modelAggregation[model] = 0;
-    modelAggregation[model] += total;
+    // Model Aggregation
+    if (!modelStats[model]) {
+      modelStats[model] = { prompt: 0, completion: 0, cached: 0, cost: 0, tokens: 0, sessions: new Set() };
+    }
+    modelStats[model].prompt += prompt;
+    modelStats[model].completion += completion;
+    modelStats[model].cached += cached;
+    modelStats[model].cost += cost;
+    modelStats[model].tokens += total;
+    modelStats[model].sessions.add(sid);
 
+    // Monthly Aggregation
+    if (!monthlyStats[month]) {
+      monthlyStats[month] = { cost: 0, tokens: 0, sessions: new Set() };
+    }
+    monthlyStats[month].cost += cost;
+    monthlyStats[month].tokens += total;
+    monthlyStats[month].sessions.add(sid);
+
+    // Global
     globalTotal.prompt += prompt;
     globalTotal.completion += completion;
     globalTotal.thought += thought;
@@ -141,21 +153,38 @@ function analyzeTokenUsage() {
 
   const uniqueSessionCount = Object.keys(sessions).length;
 
-  console.log('\n--- LLM Token Usage Analysis Report (V5.9) ---');
+  console.log('\n===========================================================');
+  console.log('--- LLM Token Usage Multi-Dimensional Analysis (V6.2) ---');
+  console.log('===========================================================');
   console.log(`Total Unique Sessions: ${uniqueSessionCount}`);
   console.log(`Overall Total Estimated Cost: ${formatCurrency(globalTotal.cost)}`);
 
-  console.log('\n--- Model Distribution ---');
-  Object.entries(modelAggregation).sort((a,b) => b[1] - a[1]).forEach(([model, val]) => {
-    console.log(`${model.padEnd(25)}: ${drawBar(val, globalTotal.tokens)} (${val.toLocaleString()} tokens)`);
+  console.log('\n--- Model Technical Details & Efficiency ---');
+  console.log('Model'.padEnd(25) + ' | ' + 'Sessions'.padEnd(10) + ' | ' + 'CacheRate'.padEnd(12) + ' | ' + 'Tokens'.padEnd(12) + ' | ' + 'Cost');
+  console.log('-'.repeat(80));
+  Object.entries(modelStats).sort((a,b) => b[1].cost - a[1].cost).forEach(([model, s]) => {
+    const cacheRate = s.prompt > 0 ? (s.cached / s.prompt * 100).toFixed(1) + '%' : '0.0%';
+    console.log(`${model.padEnd(25)} | ${s.sessions.size.toString().padEnd(10)} | ${cacheRate.padEnd(12)} | ${(s.tokens/1000).toFixed(1).padEnd(8)}k | ${formatCurrency(s.cost)}`);
+  });
+
+  console.log('\n--- Monthly Usage Trend ---');
+  Object.entries(monthlyStats).sort((a,b) => b[0].localeCompare(a[0])).forEach(([month, s]) => {
+    console.log(`${month.padEnd(10)}: ${s.sessions.size.toString().padStart(3)} sessions | ${formatCurrency(s.cost).padStart(10)} | ${drawBar(s.cost, globalTotal.cost, 15)}`);
+  });
+
+  console.log('\n--- Top 10 Sessions by Estimated Cost ---');
+  Object.values(sessions).sort((a,b) => b.cost - a.cost).slice(0, 10).forEach((s, idx) => {
+    const title = s.title.length > 45 ? s.title.substring(0, 42) + '...' : s.title;
+    console.log(`${(idx+1).toString().padStart(2)}. ${formatCurrency(s.cost).padEnd(10)} | ${title}`);
   });
 
   console.log('\n--- Global Aggregated Stats ---');
   console.log(`Total Prompt:     ${globalTotal.prompt.toLocaleString()}`);
   console.log(`Total Completion: ${globalTotal.completion.toLocaleString()}`);
-  console.log(`Total Thought:    ${globalTotal.thought.toLocaleString()}`);
   console.log(`Total Cached:     ${globalTotal.cached.toLocaleString()}`);
-  console.log(`Total Cost:       ${formatCurrency(globalTotal.cost)}`);
+  console.log(`Total Tokens:     ${globalTotal.tokens.toLocaleString()}`);
+  console.log(`Total Real Cost:  ${formatCurrency(globalTotal.cost)} (Including 10% Cache Benefit)`);
+  console.log('===========================================================\n');
 }
 
 analyzeTokenUsage();
