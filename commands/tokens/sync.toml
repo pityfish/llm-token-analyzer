@@ -2,7 +2,7 @@ description = "Automatically sync token usage data from the temporary directory.
 prompt = """
 以下是 Token 同步脚本的执行结果：
 
-!{node scripts/auto_sync.cjs}
+!{node $HOME/.gemini/extensions/llm-token-analyzer/scripts/auto_sync.cjs}
 
 请根据以上输出，使用用户偏好的语言简短地告诉我本次同步了多少新对话，主要涉及哪些模型。
 """

@@ -2,7 +2,7 @@ description = "Manually log token usage for a specific session."
 prompt = """
 以下是手动记录 Token 的执行结果：
 
-!{node scripts/log_token.cjs {{args}}}
+!{node $HOME/.gemini/extensions/llm-token-analyzer/scripts/log_token.cjs {{args}}}
 
 请使用用户偏好的语言，根据以上输出确认记录是否成功，并总结该条记录的 Token 消耗及估算成本。
 """

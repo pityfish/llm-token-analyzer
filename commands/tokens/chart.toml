@@ -2,7 +2,7 @@ description = "Generate and open interactive HTML visual reports."
 prompt = """
 以下是图表生成脚本的执行结果：
 
-!{node scripts/generate_report.cjs}
+!{node $HOME/.gemini/extensions/llm-token-analyzer/scripts/generate_report.cjs}
 
 请使用用户偏好的语言简要告知我报告已生成并打开，同时根据输出提炼一下目前数据中的一个关键趋势。
 """
