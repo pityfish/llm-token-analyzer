@@ -4,8 +4,7 @@
   "description": "[简体中文](./README_CN.md)",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "esbuild scripts/mcp_server.cjs --bundle --platform=node --target=node18 --outfile=scripts/mcp_server.bundle.cjs"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -18,11 +17,5 @@
   "bugs": {
     "url": "https://github.com/pityfish/llm-token-analyzer/issues"
   },
-  "homepage": "https://github.com/pityfish/llm-token-analyzer#readme",
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.27.1"
-  },
-  "devDependencies": {
-    "esbuild": "^0.27.4"
-  }
+  "homepage": "https://github.com/pityfish/llm-token-analyzer#readme"
 }

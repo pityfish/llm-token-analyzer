@@ -1,6 +1,8 @@
 description = "Display detailed terminal reports of token usage."
 prompt = """
-请调用 token-analyzer MCP 服务的 analyze_usage 工具。
+以下是 Token 消耗分析报告：
 
-请根据该工具返回的报告内容，使用用户偏好的语言为我总结我的支出成本、最常用的模型，并指出哪些会话消耗最多。
+!{node scripts/analyze_tokens.cjs}
+
+请根据以上报告，使用用户偏好的语言为我总结我的支出成本、最常用的模型，并指出哪些会话消耗最多。
 """

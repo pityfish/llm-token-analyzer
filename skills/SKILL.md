@@ -31,11 +31,11 @@ Provides terminal reports and web-based interactive charts.
   - Automatically generates an HTML file and opens it in the browser.
   - Includes pie charts (model distribution) and line charts (daily consumption trends).
 
-**Underlying Tools (MCP):**
-- `sync_tokens`: Automatically sync token usage data from temporary files.
-- `analyze_usage`: Generate terminal-based consumption reports.
-- `generate_chart`: Open interactive visual charts in the browser.
-- `log_usage`: Manually log a single session's consumption.
+**底层脚本 (Shell Execution):**
+- `auto_sync.cjs`: 自动同步临时文件中的 Token 消耗数据。
+- `analyze_tokens.cjs`: 生成终端消耗报告。
+- `generate_report.cjs`: 在浏览器中打开交互式可视化图表。
+- `log_token.cjs`: 手动记录单次会话的 Token 消耗。
 
 ## Storage & Security
 

@@ -1,6 +1,8 @@
 description = "Generate and open interactive HTML visual reports."
 prompt = """
-请调用 token-analyzer MCP 服务的 generate_chart 工具。
+以下是图表生成脚本的执行结果：
 
-请使用用户偏好的语言简要告知我报告已生成并打开，同时根据工具的输出提炼一下目前数据中的一个关键趋势。
+!{node scripts/generate_report.cjs}
+
+请使用用户偏好的语言简要告知我报告已生成并打开，同时根据输出提炼一下目前数据中的一个关键趋势。
 """

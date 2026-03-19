@@ -1,6 +1,8 @@
 description = "Automatically sync token usage data from the temporary directory."
 prompt = """
-请调用 token-analyzer MCP 服务的 sync_tokens 工具。
+以下是 Token 同步脚本的执行结果：
 
-请根据该工具的执行结果，使用用户偏好的语言简短地告诉我本次同步了多少新对话，主要涉及哪些模型。
+!{node scripts/auto_sync.cjs}
+
+请根据以上输出，使用用户偏好的语言简短地告诉我本次同步了多少新对话，主要涉及哪些模型。
 """
