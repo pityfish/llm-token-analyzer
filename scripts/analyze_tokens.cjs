@@ -41,11 +41,11 @@ function analyzeTokenUsage() {
   allRecords.forEach(r => {
     const sid = r.sessionId || r.session_id;
     const model = r.model;
-    const lut = r.lastUpdated || r.last_updated;
+    const lut = r.sessionLastUpdated || r.lastUpdated || r.last_updated;
     const key = `${sid}_${model}`;
     const existing = sessionModelMap.get(key);
     
-    if (!existing || new Date(lut) > new Date(existing.lastUpdated || existing.last_updated)) {
+    if (!existing || new Date(lut) > new Date(existing.sessionLastUpdated || existing.lastUpdated || existing.last_updated)) {
       sessionModelMap.set(key, r);
     }
   });
@@ -65,8 +65,8 @@ function analyzeTokenUsage() {
     const cached = rec.cachedTokens || rec.cached_tokens || 0;
     const tool = rec.toolTokens || rec.tool_tokens || 0;
     const total = rec.totalTokens || rec.total_tokens || 0;
-    const startTime = rec.startTime || rec.start_time;
-    const lastUpdated = rec.lastUpdated || rec.last_updated;
+    const startTime = rec.sessionStartTime || rec.startTime || rec.start_time;
+    const lastUpdated = rec.sessionLastUpdated || rec.lastUpdated || rec.last_updated;
 
     if (!sessions[sid]) {
       sessions[sid] = { title, startTime, lastUpdated, models: {}, total_cost: 0 };

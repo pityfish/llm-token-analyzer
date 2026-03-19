@@ -113,7 +113,7 @@ function syncAll() {
         const r = JSON.parse(l);
         // 强化字段解析：兼容旧格式，优先驼峰
         const sid = r.sessionId || r.session_id;
-        const lut = r.lastUpdated || r.last_updated;
+        const lut = r.sessionLastUpdated || r.lastUpdated || r.last_updated;
         if (!sid) return;
         const existing = sessionLastUpdateMap.get(sid);
         if (!existing || new Date(lut) > new Date(existing)) {
@@ -168,11 +168,11 @@ function syncAll() {
 
       modelEntries.forEach(([model, stats]) => {
         const record = {
-          timestamp: new Date().toISOString(),
+          syncedAt: new Date().toISOString(),
           sessionId: sid,
           sessionTitle: finalTitle,
-          startTime: meta.startTime,
-          lastUpdated: meta.lastUpdated,
+          sessionStartTime: meta.startTime,
+          sessionLastUpdated: meta.lastUpdated,
           model: model,
           promptTokens: stats.prompt,
           completionTokens: stats.completion,

@@ -20,19 +20,19 @@ function generateHtmlReport() {
   allRecords.forEach(r => {
     const sid = r.sessionId || r.session_id;
     const model = r.model;
-    const lut = r.lastUpdated || r.last_updated;
+    const lut = r.sessionLastUpdated || r.lastUpdated || r.last_updated;
     const key = `${sid}_${model}`;
     const existing = sessionModelMap.get(key);
-    if (!existing || new Date(lut) > new Date(existing.lastUpdated || existing.last_updated)) {
+    if (!existing || new Date(lut) > new Date(existing.sessionLastUpdated || existing.lastUpdated || existing.last_updated)) {
       sessionModelMap.set(key, r);
     }
   });
 
   const records = Array.from(sessionModelMap.values()).map(r => {
-    const dateObj = new Date(r.lastUpdated || r.last_updated);
+    const dateObj = new Date(r.sessionLastUpdated || r.lastUpdated || r.last_updated);
     return {
       ...r,
-      day: (r.lastUpdated || r.last_updated).split('T')[0],
+      day: (r.sessionLastUpdated || r.lastUpdated || r.last_updated).split('T')[0],
       month: `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`,
       tokens: r.totalTokens || r.total_tokens || 0,
       cached: r.cachedTokens || r.cached_tokens || 0
