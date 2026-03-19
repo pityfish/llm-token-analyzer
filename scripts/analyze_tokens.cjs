@@ -6,17 +6,58 @@ const LOG_DIR = path.join(os.homedir(), '.token_usage');
 const LOG_FILE = path.join(LOG_DIR, 'token_usage.jsonl');
 
 const PRICING = {
-  'gemini-3.1-pro-preview': { prompt: 1.25, completion: 3.75 },
-  'gemini-3-pro-preview': { prompt: 1.25, completion: 3.75 },
-  'gemini-3-flash-preview': { prompt: 0.1, completion: 0.4 },
-  'gemini-2.5-pro': { prompt: 1.25, completion: 3.75 },
-  'gemini-2.5-flash': { prompt: 0.1, completion: 0.4 },
-  'gemini-2.5-flash-lite': { prompt: 0.075, completion: 0.3 },
-  'gemini-1.5-pro': { prompt: 1.25, completion: 3.75 },
-  'gemini-1.5-pro-latest': { prompt: 1.25, completion: 3.75 },
-  'gemini-1.5-flash': { prompt: 0.075, completion: 0.3 },
-  'claude-3-5-sonnet': { prompt: 3.0, completion: 15.0 }
+  // Gemini 3 系列 (Preview)
+  'gemini-3.1-pro-preview': { p1: 2.00, p2: 4.00, c1: 12.00, c2: 18.00, cache: 0.1, t: 200000 },
+  'gemini-3-pro-preview': { p1: 2.00, p2: 4.00, c1: 12.00, c2: 18.00, cache: 0.1, t: 200000 },
+  'gemini-3-flash-preview': { p1: 0.50, p2: 0.50, c1: 3.00, c2: 3.00, cache: 0.1, t: 1000000 },
+  'gemini-3.1-flash-lite-preview': { p1: 0.25, p2: 0.25, c1: 1.50, c2: 1.50, cache: 0.1, t: 1000000 },
+  
+  // Gemini 2.5 系列
+  'gemini-2.5-pro': { p1: 1.25, p2: 2.50, c1: 10.00, c2: 15.00, cache: 0.1, t: 200000 },
+  'gemini-2.5-flash': { p1: 0.30, p2: 0.60, c1: 2.50, c2: 5.00, cache: 0.1, t: 128000 },
+  'gemini-2.5-flash-lite': { p1: 0.10, p2: 0.20, c1: 0.40, c2: 0.80, cache: 0.1, t: 128000 },
+  'gemini-2.5-flash-lite-preview': { p1: 0.10, p2: 0.20, c1: 0.40, c2: 0.80, cache: 0.1, t: 128000 },
+  
+  // Gemini 2.0 系列
+  'gemini-2.0-flash': { p1: 0.10, p2: 0.20, c1: 0.40, c2: 0.80, cache: 0.1, t: 128000 },
+  'gemini-2.0-flash-exp': { p1: 0.10, p2: 0.20, c1: 0.40, c2: 0.80, cache: 0.1, t: 128000 },
+  'gemini-2.0-flash-lite': { p1: 0.075, p2: 0.15, c1: 0.30, c2: 0.60, cache: 0.1, t: 128000 },
+  'gemini-2.0-flash-lite-preview': { p1: 0.075, p2: 0.15, c1: 0.30, c2: 0.60, cache: 0.1, t: 128000 },
+  
+  // Gemini 1.5 系列
+  'gemini-1.5-pro': { p1: 1.25, p2: 2.50, c1: 5.00, c2: 10.00, cache: 0.1, t: 128000 },
+  'gemini-1.5-pro-latest': { p1: 1.25, p2: 2.50, c1: 5.00, c2: 10.00, cache: 0.1, t: 128000 },
+  'gemini-1.5-flash': { p1: 0.075, p2: 0.15, c1: 0.30, c2: 0.60, cache: 0.1, t: 128000 },
+  'gemini-1.5-flash-latest': { p1: 0.075, p2: 0.15, c1: 0.30, c2: 0.60, cache: 0.1, t: 128000 },
+  'gemini-1.5-flash-8b': { p1: 0.0375, p2: 0.075, c1: 0.15, c2: 0.30, cache: 0.1, t: 128000 },
+  'gemini-1.5-flash-8b-latest': { p1: 0.0375, p2: 0.075, c1: 0.15, c2: 0.30, cache: 0.1, t: 128000 },
+  
+  // Gemini 1.0 系列
+  'gemini-1.0-pro': { p1: 0.125, p2: 0.125, c1: 0.375, c2: 0.375, cache: 0.1, t: 1000000 },
+  
+  // 其他
+  'claude-3-5-sonnet': { p1: 3.0, p2: 3.0, c1: 15.0, c2: 15.0, cache: 1.0, t: 1000000 }
 };
+
+/**
+ * 核心计费逻辑：支持自定义阶梯阈值 + 缓存读取折扣
+ * p1/c1: <threshold 价格, p2/c2: >threshold 价格
+ */
+function calculateCost(model, prompt, completion, cached) {
+  // 查找最匹配的定价，支持前缀匹配
+  const modelKey = Object.keys(PRICING).find(k => model.startsWith(k)) || model;
+  const p = PRICING[modelKey] || { p1: 0, p2: 0, c1: 0, c2: 0, cache: 1.0, t: 128000 };
+  
+  const isLong = prompt > p.t;
+  const pPrice = isLong ? p.p2 : p.p1;
+  const cPrice = isLong ? p.c2 : p.c1;
+  
+  const normalPrompt = prompt - cached;
+  const cost = (normalPrompt / 1000000) * pPrice + 
+               (cached / 1000000) * pPrice * p.cache + 
+               (completion / 1000000) * cPrice;
+  return cost;
+}
 
 function formatCurrency(amount) {
   return `$${amount.toFixed(4)}`;
@@ -76,8 +117,7 @@ function analyzeTokenUsage() {
       sessions[sid].models[model] = { prompt: 0, completion: 0, thought: 0, cached: 0, tool: 0, cost: 0 };
     }
 
-    const pricing = PRICING[model] || { prompt: 0, completion: 0 };
-    const cost = (prompt / 1000000) * pricing.prompt + (completion / 1000000) * pricing.completion;
+    const cost = calculateCost(model, prompt, completion, cached);
 
     sessions[sid].models[model].prompt += prompt;
     sessions[sid].models[model].completion += completion;

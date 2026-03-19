@@ -114,6 +114,52 @@ function generateHtmlReport() {
 
     <script>
         const data = ${JSON.stringify(records)};
+        const PRICING = {
+            // Gemini 3 系列 (Preview)
+            'gemini-3.1-pro-preview': { p1: 2.00, p2: 4.00, c1: 12.00, c2: 18.00, cache: 0.1, t: 200000 },
+            'gemini-3-pro-preview': { p1: 2.00, p2: 4.00, c1: 12.00, c2: 18.00, cache: 0.1, t: 200000 },
+            'gemini-3-flash-preview': { p1: 0.50, p2: 0.50, c1: 3.00, c2: 3.00, cache: 0.1, t: 1000000 },
+            'gemini-3.1-flash-lite-preview': { p1: 0.25, p2: 0.25, c1: 1.50, c2: 1.50, cache: 0.1, t: 1000000 },
+            
+            // Gemini 2.5 系列
+            'gemini-2.5-pro': { p1: 1.25, p2: 2.50, c1: 10.00, c2: 15.00, cache: 0.1, t: 200000 },
+            'gemini-2.5-flash': { p1: 0.30, p2: 0.60, c1: 2.50, c2: 5.00, cache: 0.1, t: 128000 },
+            'gemini-2.5-flash-lite': { p1: 0.10, p2: 0.20, c1: 0.40, c2: 0.80, cache: 0.1, t: 128000 },
+            'gemini-2.5-flash-lite-preview': { p1: 0.10, p2: 0.20, c1: 0.40, c2: 0.80, cache: 0.1, t: 128000 },
+            
+            // Gemini 2.0 系列
+            'gemini-2.0-flash': { p1: 0.10, p2: 0.20, c1: 0.40, c2: 0.80, cache: 0.1, t: 128000 },
+            'gemini-2.0-flash-exp': { p1: 0.10, p2: 0.20, c1: 0.40, c2: 0.80, cache: 0.1, t: 128000 },
+            'gemini-2.0-flash-lite': { p1: 0.075, p2: 0.15, c1: 0.30, c2: 0.60, cache: 0.1, t: 128000 },
+            'gemini-2.0-flash-lite-preview': { p1: 0.075, p2: 0.15, c1: 0.30, c2: 0.60, cache: 0.1, t: 128000 },
+            
+            // Gemini 1.5 系列
+            'gemini-1.5-pro': { p1: 1.25, p2: 2.50, c1: 5.00, c2: 10.00, cache: 0.1, t: 128000 },
+            'gemini-1.5-pro-latest': { p1: 1.25, p2: 2.50, c1: 5.00, c2: 10.00, cache: 0.1, t: 128000 },
+            'gemini-1.5-flash': { p1: 0.075, p2: 0.15, c1: 0.30, c2: 0.60, cache: 0.1, t: 128000 },
+            'gemini-1.5-flash-latest': { p1: 0.075, p2: 0.15, c1: 0.30, c2: 0.60, cache: 0.1, t: 128000 },
+            'gemini-1.5-flash-8b': { p1: 0.0375, p2: 0.075, c1: 0.15, c2: 0.30, cache: 0.1, t: 128000 },
+            'gemini-1.5-flash-8b-latest': { p1: 0.0375, p2: 0.075, c1: 0.15, c2: 0.30, cache: 0.1, t: 128000 },
+            
+            // Gemini 1.0 系列
+            'gemini-1.0-pro': { p1: 0.125, p2: 0.125, c1: 0.375, c2: 0.375, cache: 0.1, t: 1000000 },
+            
+            // 其他
+            'claude-3-5-sonnet': { p1: 3.0, p2: 3.0, c1: 15.0, c2: 15.0, cache: 1.0, t: 1000000 }
+        };
+
+        function calculateCost(model, prompt, completion, cached) {
+            const modelKey = Object.keys(PRICING).find(k => model.startsWith(k)) || model;
+            const p = PRICING[modelKey] || { p1: 0, p2: 0, c1: 0, c2: 0, cache: 1.0, t: 128000 };
+            const isLong = prompt > p.t;
+            const pPrice = isLong ? p.p2 : p.p1;
+            const cPrice = isLong ? p.c2 : p.c1;
+            const normalPrompt = prompt - cached;
+            return (normalPrompt / 1000000) * pPrice + 
+                   (cached / 1000000) * pPrice * p.cache + 
+                   (completion / 1000000) * cPrice;
+        }
+
         const allModels = Array.from(new Set(data.map(r => r.model))).sort();
         let mode = 'day';
         let bubbleChart, pieChart;
@@ -156,10 +202,17 @@ function generateHtmlReport() {
 
             const totalT = filtered.reduce((acc, r) => acc + r.tokens, 0);
             const totalC = filtered.reduce((acc, r) => acc + r.cached, 0);
+            const totalCost = filtered.reduce((acc, r) => {
+                const prompt = r.promptTokens || r.prompt_tokens || 0;
+                const completion = r.completionTokens || r.completion_tokens || 0;
+                const cached = r.cachedTokens || r.cached_tokens || 0;
+                return acc + calculateCost(r.model, prompt, completion, cached);
+            }, 0);
+
             const uniqueS = new Set(filtered.map(r => r.sessionId)).size;
             document.getElementById('s-sessions').innerText = uniqueS.toLocaleString();
             document.getElementById('s-tokens').innerText = (totalT / 1000000).toFixed(2) + 'M';
-            document.getElementById('s-cost').innerText = '$' + (totalT * 0.00000013).toFixed(2);
+            document.getElementById('s-cost').innerText = '$' + totalCost.toFixed(4);
             document.getElementById('s-cache').innerText = (totalC / 1000000).toFixed(2) + 'M';
 
             const rMap = new Map();
